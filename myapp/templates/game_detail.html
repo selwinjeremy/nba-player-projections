@@ -238,7 +238,6 @@
                 <tr>
                     <th>Name</th>
                     <th>GP</th>
-                    <th>WIN %</th>
                     <th>MIN</th>
                     <th>FGM</th>
                     <th>FGA</th>
@@ -254,14 +253,14 @@
                     <th>TOV</th>
                     <th>DD</th>
                     <th>TD</th>
+                    <th>WIN %</th>
                 </tr>
             </thead>
             <tbody>
                 {% for player in home_team_players %}
                 <tr>
-                    <td>{{ player.PLAYER_NAME }}</td>
+                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}">{{ player.PLAYER_NAME}}</a></td>
                     <td>{{ player.GP }}</td>
-                    <td>{{ player.W_PCT }}</td>
                     <td>{{ player.MIN }}</td>
                     <td>{{ player.FGM }}</td>
                     <td>{{ player.FGA }}</td>
@@ -277,6 +276,7 @@
                     <td>{{ player.TOV }}</td>
                     <td>{{ player.DD2 }}</td>
                     <td>{{ player.TD3 }}</td>
+                    <td>{{ player.W_PCT }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -289,7 +289,6 @@
                 <tr>
                     <th>Name</th>
                     <th>GP</th>
-                    <th>WIN %</th>
                     <th>MIN</th>
                     <th>FGM</th>
                     <th>FGA</th>
@@ -305,14 +304,14 @@
                     <th>TOV</th>
                     <th>DD</th>
                     <th>TD</th>
+                    <th>WIN %</th>
                 </tr>
             </thead>
             <tbody>
                 {% for player in away_team_players %}
                 <tr>
-                    <td>{{ player.PLAYER_NAME }}</td>
+                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}">{{ player.PLAYER_NAME}}</a></td>
                     <td>{{ player.GP }}</td>
-                    <td>{{ player.W_PCT }}</td>
                     <td>{{ player.MIN }}</td>
                     <td>{{ player.FGM }}</td>
                     <td>{{ player.FGA }}</td>
@@ -328,11 +327,86 @@
                     <td>{{ player.TOV }}</td>
                     <td>{{ player.DD2 }}</td>
                     <td>{{ player.TD3 }}</td>
+                    <td>{{ player.W_PCT }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <div id="player-stats-container"></div>
+    <script>
+        document.querySelectorAll('.player-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const playerId = this.getAttribute('data-player-id');
+                console.log(playerId)
+                fetch(`/get_player_last_10_games/${playerId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const table = createStatsTable(data);
+                        console.log(table)
+                        document.getElementById('player-stats-container').innerHTML = table;
+                    })
+                    .catch(error => console.log('Error:', error));
+            });
+        });
+
+        function createStatsTable(data) {
+            let tableHTML = `<div class="player-stats-card">
+    <h2>${data[0].PLAYER_NAME} Last 10 Games</h2>
+    <table class="player-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Opp</th>
+                <th>MIN</th>
+                <th>FGM</th>
+                <th>FGA</th>
+                <th>FG %</th>
+                <th>3-FGM</th>
+                <th>3-FGA</th>
+                <th>3-FG %</th>
+                <th>PTS</th>
+                <th>REB</th>
+                <th>AST</th>
+                <th>STL</th>
+                <th>BLK</th>
+                <th>TOV</th>
+                <th>DD</th>
+                <th>TD</th>
+                <th>PF</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+            data.forEach(row => {
+                console.log(row)
+                tableHTML += `<tr>
+                        <td>${row.GAME_DATE}</td>
+                        <td>${row.MATCHUP}</td>
+                        <td>${row.MIN}</td>
+                        <td>${row.FGM}</td>
+                        <td>${row.FGA}</td>
+                        <td>${row.FG_PCT}</td>
+                        <td>${row.FG3M}</td>
+                        <td>${row.FG3A}</td>
+                        <td>${row.FG3_PCT}</td>
+                        <td>${row.PTS}</td>
+                        <td>${row.REB}</td>
+                        <td>${row.AST}</td>
+                        <td>${row.STL}</td>
+                        <td>${row.BLK}</td>
+                        <td>${row.TOV}</td>
+                        <td>${row.DD2}</td>
+                        <td>${row.TD3}</td>
+                        <td>${row.PF}</td>
+                    </tr>`;
+            });
+
+            tableHTML += `</tbody></table></div>`;
+            return tableHTML;
+        }
+    </script>
 </body>
 
 </html>
