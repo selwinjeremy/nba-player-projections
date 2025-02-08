@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            margin: 0;
+            padding: 0;
+            color: black;
+            text-align: center; /* Center everything by default */
+        }
+    
+        h1 {
+            font-size: 36px;
+            margin-top: 20px;
+            color: #1e3a8a; /* Deep blue title */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    
+        .game-info {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center the content for teams and arena */
+        }
+    
+        .teams-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+    
+        .team {
+            flex: 1;
+            padding: 20px;
+            background: #ffffff;
+            transition: transform 0.3s ease-in-out;
+        }
+    
+        .team h2 {
+            margin: 5px 0;
+            font-size: 24px;
+            color: #1e3a8a; /* Deep blue team name */
+        }
+    
+        .team-stats {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #4b5563; /* Dark gray */
+        }
+    
+        .vs {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e11d48; /* Red accent */
+            margin: 0 20px;
+        }
+    
+        .game-details {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #374151; /* Dark gray */
+        }
+    
+        .arena {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #e11d48; /* Red accent */
+        }
+    
+        /* Previous matchups section */
+        .previous-matchups {
+            text-align: left; /* Left-align the previous matchups */
+        }
+    
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+    
+        .table th, .table td {
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    
+        .table th {
+            background-color: #1e3a8a; /* Deep blue */
+            color: white;
+            font-size: 18px;
+        }
+    
+        .table td {
+            font-size: 16px;
+            color: #4b5563; /* Dark gray */
+        }
+    
+        .table .matchup {
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+    
+        .table .score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    
+        .winner {
+            font-weight: bold;
+            color: #e11d48; /* Red accent */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🏀 Game Details 🏀</h1>
+
+    <div class="game-info">
+        {% if game_data %}
+            <div class="teams-container">
+                <div class="team">
+                    <h2>{{ team_data.0.TEAM_CITY }} {{ team_data.0.TEAM_NAME }} (H)</h2>
+                    <p class="team-stats">Record: {{ team_data.0.W }} - {{ team_data.0.L }}</p>
+                    <p class="team-stats">Points per Game: {{ team_data.0.PTS_PG }} ({{team_data.0.PTS_RANK}})</p>
+                    <p class="team-stats">Opponent PPG: {{ team_data.0.OPP_PTS_PG }} ({{team_data.0.OPP_PTS_RANK}})</p>
+                </div>
+
+                <div class="vs">VS</div>
+
+                <div class="team">
+                    <h2>{{ team_data.1.TEAM_CITY }} {{ team_data.1.TEAM_NAME }} (A)</h2>
+                    <p class="team-stats">Record: {{ team_data.1.W }} - {{ team_data.1.L }}</p>
+                    <p class="team-stats">Points per Game: {{ team_data.1.PTS_PG }} ({{team_data.1.PTS_RANK}})</p>
+                    <p class="team-stats">Opponent PPG: {{ team_data.1.OPP_PTS_PG }} ({{team_data.1.OPP_PTS_RANK}})</p>
+                </div>
+            </div>
+
+            <div class="game-details">
+                <p class="game-day">Game Time: {{ game_data.0.GAME_STATUS_TEXT }}</p>
+                <p class="arena">Arena: {{ game_data.0.ARENA_NAME }}</p>
+            </div>
+        {% else %}
+            <p>No game data available.</p>
+        {% endif %}
+    </div>
+
+    <div class="game-info previous-matchups">
+        <h1>Previous Matchups</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Matchup</th>
+                    <th>Game Date</th>
+                    <th>Winner</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in previous_matchups %}
+                <tr>
+                    <td class="matchup">{{ game.MATCHUP_HOME }}</td>
+                    <td>{{ game.GAME_DATE_HOME }}</td>
+                    <td class="winner">
+                        {% if game.HOME_WL == "W" %}
+                            {{ game.TEAM_NAME_HOME }}
+                        {% else %}
+                            {{ game.TEAM_NAME_AWAY }}
+                        {% endif %}
+                    </td>
+                    <td class="score">
+                        {{ game.TEAM_ABBREVIATION_HOME }} {{ game.HOME_PTS }} - 
+                        {{ game.TEAM_ABBREVIATION_AWAY }} {{ game.AWAY_PTS }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
