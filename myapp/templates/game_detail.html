@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,20 +8,20 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
+            background-color: #f3f4f6;
             margin: 0;
             padding: 0;
             color: black;
-            text-align: center; /* Center everything by default */
+            text-align: center;
         }
-    
+
         h1 {
             font-size: 36px;
             margin-top: 20px;
-            color: #1e3a8a; /* Deep blue title */
+            color: #1e3a8a;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
-    
+
         .game-info {
             width: 80%;
             margin: 20px auto;
@@ -28,129 +29,173 @@
             background: white;
             border-radius: 12px;
             box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center; /* Center the content for teams and arena */
+            text-align: center;
         }
-    
+
         .teams-container {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            text-align: center;
             padding: 20px;
         }
-    
+
         .team {
             flex: 1;
             padding: 20px;
             background: #ffffff;
             transition: transform 0.3s ease-in-out;
         }
-    
+
         .team h2 {
             margin: 5px 0;
             font-size: 24px;
-            color: #1e3a8a; /* Deep blue team name */
+            color: #1e3a8a;
         }
-    
+
         .team-stats {
-            font-size: 16px;
+            font-size: 14px;
             margin-top: 10px;
-            color: #4b5563; /* Dark gray */
+            color: #4b5563;
         }
-    
+
         .vs {
             font-size: 28px;
             font-weight: bold;
-            color: #e11d48; /* Red accent */
+            color: #e11d48;
             margin: 0 20px;
         }
-    
+
         .game-details {
             font-size: 18px;
             margin-top: 20px;
-            color: #374151; /* Dark gray */
+            color: #374151;
         }
-    
+
         .arena {
-            font-size: 16px;
+            font-size: 14px;
             margin-top: 10px;
-            color: #e11d48; /* Red accent */
+            color: #e11d48;
         }
-    
-        /* Previous matchups section */
+
         .previous-matchups {
-            text-align: left; /* Left-align the previous matchups */
+            text-align: left;
         }
-    
+
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            font-size: 14px;
+            /* Smaller font size for compactness */
         }
-    
-        .table th, .table td {
-            padding: 12px 20px;
+
+        .table th,
+        .table td {
+            padding: 8px 10px;
+            /* Reduced padding for a more compact layout */
             border: 1px solid #ddd;
             text-align: left;
         }
-    
+
         .table th {
-            background-color: #1e3a8a; /* Deep blue */
+            background-color: #1e3a8a;
             color: white;
-            font-size: 18px;
-        }
-    
-        .table td {
             font-size: 16px;
-            color: #4b5563; /* Dark gray */
+            /* Slightly larger header for clarity */
         }
-    
+
+        .table td {
+            color: #4b5563;
+        }
+
         .table .matchup {
             font-weight: bold;
             color: #1e3a8a;
         }
-    
+
         .table .score {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
-    
+
         .winner {
             font-weight: bold;
-            color: #e11d48; /* Red accent */
+            color: #e11d48;
+        }
+
+        .player-table th,
+        .player-table td {
+            padding: 6px 8px;
+            /* Smaller padding for player stats table */
+            font-size: 12px;
+            /* Smaller font size */
+        }
+
+        .player-table th {
+            font-size: 14px;
+            /* Slightly larger font for headers */
+        }
+
+        .player-table {
+            margin-top: 10px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .player-table th {
+            background-color: #1e3a8a;
+            color: white;
+        }
+
+        .player-table td {
+            color: #4b5563;
+            font-size: 12px;
+            /* Smaller font for player data */
+        }
+
+        /* Card style for player stats tables */
+        .player-stats-card {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
         }
     </style>
 </head>
+
 <body>
 
     <h1>🏀 Game Details 🏀</h1>
 
     <div class="game-info">
         {% if game_data %}
-            <div class="teams-container">
-                <div class="team">
-                    <h2>{{ team_data.0.TEAM_CITY }} {{ team_data.0.TEAM_NAME }} (H)</h2>
-                    <p class="team-stats">Record: {{ team_data.0.W }} - {{ team_data.0.L }}</p>
-                    <p class="team-stats">Points per Game: {{ team_data.0.PTS_PG }} ({{team_data.0.PTS_RANK}})</p>
-                    <p class="team-stats">Opponent PPG: {{ team_data.0.OPP_PTS_PG }} ({{team_data.0.OPP_PTS_RANK}})</p>
-                </div>
-
-                <div class="vs">VS</div>
-
-                <div class="team">
-                    <h2>{{ team_data.1.TEAM_CITY }} {{ team_data.1.TEAM_NAME }} (A)</h2>
-                    <p class="team-stats">Record: {{ team_data.1.W }} - {{ team_data.1.L }}</p>
-                    <p class="team-stats">Points per Game: {{ team_data.1.PTS_PG }} ({{team_data.1.PTS_RANK}})</p>
-                    <p class="team-stats">Opponent PPG: {{ team_data.1.OPP_PTS_PG }} ({{team_data.1.OPP_PTS_RANK}})</p>
-                </div>
+        <div class="teams-container">
+            <div class="team">
+                <h2>{{ team_data.0.TEAM_CITY }} {{ team_data.0.TEAM_NAME }} (H)</h2>
+                <p class="team-stats">Record: {{ team_data.0.W }} - {{ team_data.0.L }}</p>
+                <p class="team-stats">Points per Game: {{ team_data.0.PTS_PG }} ({{team_data.0.PTS_RANK}})</p>
+                <p class="team-stats">Opponent PPG: {{ team_data.0.OPP_PTS_PG }} ({{team_data.0.OPP_PTS_RANK}})</p>
             </div>
 
-            <div class="game-details">
-                <p class="game-day">Game Time: {{ game_data.0.GAME_STATUS_TEXT }}</p>
-                <p class="arena">Arena: {{ game_data.0.ARENA_NAME }}</p>
+            <div class="vs">VS</div>
+
+            <div class="team">
+                <h2>{{ team_data.1.TEAM_CITY }} {{ team_data.1.TEAM_NAME }} (A)</h2>
+                <p class="team-stats">Record: {{ team_data.1.W }} - {{ team_data.1.L }}</p>
+                <p class="team-stats">Points per Game: {{ team_data.1.PTS_PG }} ({{team_data.1.PTS_RANK}})</p>
+                <p class="team-stats">Opponent PPG: {{ team_data.1.OPP_PTS_PG }} ({{team_data.1.OPP_PTS_RANK}})</p>
             </div>
+        </div>
+
+        <div class="game-details">
+            <p class="game-day">Game Time: {{ game_data.0.GAME_STATUS_TEXT }}</p>
+            <p class="arena">Arena: {{ game_data.0.ARENA_NAME }}</p>
+        </div>
         {% else %}
-            <p>No game data available.</p>
+        <p>No game data available.</p>
         {% endif %}
     </div>
 
@@ -172,13 +217,13 @@
                     <td>{{ game.GAME_DATE_HOME }}</td>
                     <td class="winner">
                         {% if game.HOME_WL == "W" %}
-                            {{ game.TEAM_NAME_HOME }}
+                        {{ game.TEAM_NAME_HOME }}
                         {% else %}
-                            {{ game.TEAM_NAME_AWAY }}
+                        {{ game.TEAM_NAME_AWAY }}
                         {% endif %}
                     </td>
                     <td class="score">
-                        {{ game.TEAM_ABBREVIATION_HOME }} {{ game.HOME_PTS }} - 
+                        {{ game.TEAM_ABBREVIATION_HOME }} {{ game.HOME_PTS }} -
                         {{ game.TEAM_ABBREVIATION_AWAY }} {{ game.AWAY_PTS }}
                     </td>
                 </tr>
@@ -186,6 +231,108 @@
             </tbody>
         </table>
     </div>
-
+    <div class="player-stats-card">
+        <h2 class=>{{ team_data.0.TEAM_NAME }} Player Stats</h2>
+        <table class="player-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>GP</th>
+                    <th>WIN %</th>
+                    <th>MIN</th>
+                    <th>FGM</th>
+                    <th>FGA</th>
+                    <th>FG %</th>
+                    <th>3-FGM</th>
+                    <th>3-FGA</th>
+                    <th>3-FG %</th>
+                    <th>PTS</th>
+                    <th>REB</th>
+                    <th>AST</th>
+                    <th>STL</th>
+                    <th>BLK</th>
+                    <th>TOV</th>
+                    <th>DD</th>
+                    <th>TD</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in home_team_players %}
+                <tr>
+                    <td>{{ player.PLAYER_NAME }}</td>
+                    <td>{{ player.GP }}</td>
+                    <td>{{ player.W_PCT }}</td>
+                    <td>{{ player.MIN }}</td>
+                    <td>{{ player.FGM }}</td>
+                    <td>{{ player.FGA }}</td>
+                    <td>{{ player.FG_PCT }}</td>
+                    <td>{{ player.FG3M }}</td>
+                    <td>{{ player.FG3A }}</td>
+                    <td>{{ player.FG3_PCT }}</td>
+                    <td>{{ player.PTS }}</td>
+                    <td>{{ player.REB }}</td>
+                    <td>{{ player.AST }}</td>
+                    <td>{{ player.STL }}</td>
+                    <td>{{ player.BLK }}</td>
+                    <td>{{ player.TOV }}</td>
+                    <td>{{ player.DD2 }}</td>
+                    <td>{{ player.TD3 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="player-stats-card">
+        <h2>{{ team_data.1.TEAM_NAME }} Player Stats</h2>
+        <table class="player-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>GP</th>
+                    <th>WIN %</th>
+                    <th>MIN</th>
+                    <th>FGM</th>
+                    <th>FGA</th>
+                    <th>FG %</th>
+                    <th>3-FGM</th>
+                    <th>3-FGA</th>
+                    <th>3-FG %</th>
+                    <th>PTS</th>
+                    <th>REB</th>
+                    <th>AST</th>
+                    <th>STL</th>
+                    <th>BLK</th>
+                    <th>TOV</th>
+                    <th>DD</th>
+                    <th>TD</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in away_team_players %}
+                <tr>
+                    <td>{{ player.PLAYER_NAME }}</td>
+                    <td>{{ player.GP }}</td>
+                    <td>{{ player.W_PCT }}</td>
+                    <td>{{ player.MIN }}</td>
+                    <td>{{ player.FGM }}</td>
+                    <td>{{ player.FGA }}</td>
+                    <td>{{ player.FG_PCT }}</td>
+                    <td>{{ player.FG3M }}</td>
+                    <td>{{ player.FG3A }}</td>
+                    <td>{{ player.FG3_PCT }}</td>
+                    <td>{{ player.PTS }}</td>
+                    <td>{{ player.REB }}</td>
+                    <td>{{ player.AST }}</td>
+                    <td>{{ player.STL }}</td>
+                    <td>{{ player.BLK }}</td>
+                    <td>{{ player.TOV }}</td>
+                    <td>{{ player.DD2 }}</td>
+                    <td>{{ player.TD3 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
+
 </html>
