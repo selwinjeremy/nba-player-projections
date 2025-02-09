@@ -399,7 +399,7 @@
         // Function to create the player matchups table
         function createMatchupsTable(data = []) {
             let tableHTML = `<div class="matchups-table-container mb-4">
-                <h2>${(data[0] === undefined) ? "No Matchups" : data[0].PLAYER_NAME} - Against Opponent</h2>
+                <h2>${(data[0] === undefined) ? "No Matchups" : "Against Opponent"}</h2>
                 <table class="table table-table-bordered">
                     <thead>
                         <tr>

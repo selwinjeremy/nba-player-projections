@@ -11,6 +11,8 @@ from nba_api.stats.endpoints.leaguedashteamstats import LeagueDashTeamStats
 
 from nba_api.stats.endpoints.teamplayerdashboard import TeamPlayerDashboard
 from nba_api.stats.endpoints.playergamelogs import PlayerGameLogs
+from nba_api.stats.endpoints.playerindex import PlayerIndex
+
 import pandas as pd
 
 # Create your views here.
@@ -287,19 +289,34 @@ def game_detail(request, game_id):
     })
 
 
-def get_player_games(player_id):
-    player_game_logs = PlayerGameLogs(season_nullable='2024-25')
+def get_player_games(player_id, season='2024-25'):
+    player_game_logs = PlayerGameLogs(season_nullable=season)
     player_stats = player_game_logs.get_dict()
     data = player_stats['resultSets']
     player_stats_data = data[0]
     player_stats_df = pd.DataFrame(
         player_stats_data['rowSet'], columns=player_stats_data['headers'])
+    
+    player_game_logs_2023 = PlayerGameLogs(season_nullable='2023-24')
+    player_stats_2023 = player_game_logs_2023.get_dict()
+    data_2023 = player_stats_2023['resultSets']
+    player_stats_data_2023 = data_2023[0]
+    player_stats_df_2023 = pd.DataFrame(
+        player_stats_data_2023['rowSet'], columns=player_stats_data_2023['headers'])
+    
+    player_game_logs_2022 = PlayerGameLogs(season_nullable='2022-23')
+    player_stats_2022 = player_game_logs_2022.get_dict()
+    data_2022 = player_stats_2022['resultSets']
+    player_stats_data_2022 = data_2022[0]
+    player_stats_df_2022 = pd.DataFrame(
+        player_stats_data_2022['rowSet'], columns=player_stats_data_2022['headers'])
 
+    player_stats_df = pd.concat([player_stats_df, player_stats_df_2023, player_stats_df_2022], ignore_index=True)
     # Filter for player by player ID
     player_stats_df = player_stats_df[player_stats_df['PLAYER_ID'].astype(
         str) == player_id]
-
-    player_stats_df = player_stats_df.drop(columns=['SEASON_YEAR', 'NICKNAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME',
+    player_stats_df['MATCHUP'] = player_stats_df['MATCHUP'].str[-3:]
+    player_stats_df = player_stats_df.drop(columns=['SEASON_YEAR', 'NICKNAME', 'TEAM_ABBREVIATION', 'TEAM_NAME',
                                                     'WL', 'FTM',
                                                     'FTA', 'FT_PCT', 'OREB', 'DREB', 'BLKA','PFD', 'PLUS_MINUS', 'NBA_FANTASY_PTS', 'WNBA_FANTASY_PTS', 'GP_RANK', 'W_RANK', 'L_RANK', 'W_PCT_RANK',
                                                     'MIN_RANK', 'FGM_RANK', 'FGA_RANK', 'FG_PCT_RANK', 'FG3M_RANK',
@@ -312,7 +329,6 @@ def get_player_games(player_id):
     player_stats_df['MIN'] = player_stats_df['MIN'].round(1)
     player_stats_df['GAME_DATE'] = pd.to_datetime(player_stats_df['GAME_DATE'])
     player_stats_df['GAME_DATE'] = pd.to_datetime(player_stats_df['GAME_DATE']).dt.strftime('%Y-%m-%d')
-    player_stats_df['MATCHUP'] = player_stats_df['MATCHUP'].str[-3:]
     return player_stats_df.to_dict(orient="records")
 
 
@@ -330,19 +346,52 @@ def get_player_matchups(player_id, game_id):
 
     game_header_df = game_header_df[game_header_df['GAME_ID'] == game_id]
 
+    player_games = pd.DataFrame.from_dict(get_player_games(player_id))
+    print(player_games)
+
     home_team_id = game_header_df.iloc[0]['HOME_TEAM_ID']
     away_team_id = game_header_df.iloc[0]['VISITOR_TEAM_ID']
 
+    player_data = PlayerIndex(season='2024-25')
+    player_dict = player_data.get_dict()
+    player_data = player_dict['resultSets']
+    player_data = player_data[0]
+    player_data_df = pd.DataFrame(player_data['rowSet'], columns=player_data['headers'])
+    player_data_df = player_data_df[player_data_df['PERSON_ID'] == int(player_id)]
+    
+    if not player_data_df.empty:
+        player_team_id = player_data_df.iloc[0]['TEAM_ID']
+    else:
+        return {}
+    
+    #Now that we have the team ID of the player, and the home and visitor team id, we just need to figure out which team ID is not the player's
+    if player_team_id != home_team_id and player_team_id != away_team_id:
+        opponent_id = {}
+    else:
+        if player_team_id != home_team_id:
+            opponent_id = home_team_id
+        elif player_team_id != away_team_id:
+            opponent_id = away_team_id
+
+    #After we do that, we use the opponent team ID to search nba_team_df to get their team abbreviation
+    team_list = teams.get_teams()
+    nba_team_df = pd.DataFrame.from_dict(team_list)
+    
+    #Using that, we fetch all of the matchups in the past 3 seasons between that player and the opponent
+    opponent_team_df = nba_team_df[nba_team_df['id'] == opponent_id]
+    if not player_data_df.empty:
+        opponent_team_abbreviation = opponent_team_df.iloc[0]['abbreviation']
+    else:
+        return {}
+
+
     #Now that we have the home and away team ID's, we need to fetch the matchups:
-    matchups = pd.DataFrame.from_dict(get_matchups(home_team_id, away_team_id))
+    matchups = player_games[player_games['MATCHUP'] == opponent_team_abbreviation]
+    print(matchups)
     if len(matchups) == 0:
         return {}
-    matchups = matchups[['GAME_ID']]
 
-    player_games = pd.DataFrame.from_dict(get_player_games(player_id))
-    player_matchups = pd.merge(matchups, player_games, on=['GAME_ID'])
-
-    return player_matchups.to_dict(orient="records")
+    return matchups.to_dict(orient="records")
 
 def player_stats_view(request, player_id):
     stats = get_player_games(player_id)
