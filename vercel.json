@@ -9,6 +9,11 @@
         }
       }
     ],
+    "functions": {
+        "nbaprojections/wsgi.py": {
+            "maxDuration": 60
+        }
+    },
     "routes": [
       {
         "src": "/(.*)",
