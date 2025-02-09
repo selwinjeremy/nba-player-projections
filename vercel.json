@@ -16,8 +16,8 @@
       }
     ],
     "functions": {
-      "api/*": {
-        "maxDuration": 45
+      "api/users/**/*.js": {
+        "maxDuration": 60
       }
     }
   }
