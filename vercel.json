@@ -1,13 +1,13 @@
 {
     "builds": [{
-        "src": "nba-player-projections/wsgi.py",
+        "src": "nbaprojections/wsgi.py",
         "use": "@vercel/python",
         "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
     }],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "nba-player-projections/wsgi.py"
+            "dest": "nbaprojections/wsgi.py"
         }
     ]
 }
