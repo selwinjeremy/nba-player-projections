@@ -23,5 +23,6 @@ urlpatterns = [
     path('', home, name='home'),
     path('game_list/', game_list, name='game_list'),
     path('game_detail/<str:game_id>/', game_detail, name='game_detail'),
-    path('get_player_last_10_games/<str:player_id>/', player_stats_view, name='get_player_last_10_games'),
+    path('get_player_games/<str:player_id>/', player_stats_view, name='get_player_games'),
+    path('get_player_matchups/<str:player_id>/<str:game_id>', player_matchups_view, name='get_player_matchups'),
 ]

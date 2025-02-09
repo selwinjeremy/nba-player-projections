@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from nba_api.stats.static import teams
+
 from nba_api.stats.endpoints.scoreboardv2 import ScoreboardV2
 from nba_api.stats.endpoints.leaguegamelog import LeagueGameLog
 
 from nba_api.stats.endpoints.teaminfocommon import TeamInfoCommon
+from nba_api.stats.endpoints.leaguedashteamstats import LeagueDashTeamStats
 
 from nba_api.stats.endpoints.teamplayerdashboard import TeamPlayerDashboard
 from nba_api.stats.endpoints.playergamelogs import PlayerGameLogs
@@ -66,8 +69,8 @@ def game_list(request):
         'TEAM_CITY_NAME_visitor': 'VISITOR_TEAM_CITY_NAME',
         'TEAM_NAME_visitor': 'VISITOR_TEAM_NAME',
     })
-
-    print(final_df.columns)
+    
+    final_df = final_df.dropna(subset=['GAME_TIME'])
 
     return JsonResponse(final_df.to_dict(orient="records"), safe=False)
 
@@ -103,6 +106,19 @@ def get_teams_data(home_team_id: str, away_team_id: str):
         'TEAM_ID', 'TEAM_CITY', 'TEAM_NAME', 'W', 'L', 'PCT',
         'PTS_RANK', 'PTS_PG', 'OPP_PTS_RANK', 'OPP_PTS_PG'
     ]]
+    final_df['TEAM_ID'] = final_df['TEAM_ID'].astype(str)
+
+    team_list = teams.get_teams()
+    nba_team_df = pd.DataFrame.from_dict(team_list)
+    nba_team_df['LOGO_PATH'] = nba_team_df['full_name'].apply(lambda team: f"/media/{team}.png")
+    nba_team_df = nba_team_df.rename(columns={'id':'TEAM_ID'})
+    nba_team_df = nba_team_df[['TEAM_ID','LOGO_PATH']]
+    nba_team_df['TEAM_ID'] = nba_team_df['TEAM_ID'].astype(str)
+    final_df = pd.merge(final_df, nba_team_df, on=['TEAM_ID'])
+
+    print(final_df)
+
+    #Fetch the advanced analytics like 3-points allowed, points allowed in paind 
     return final_df.to_dict(orient="records")
 
 
@@ -128,10 +144,11 @@ def get_matchups(home_team_id: str, away_team_id: str):
 
     merged_stats = pd.merge(home_stats, away_stats,
                             on='GAME_ID', suffixes=('_HOME', '_AWAY'))
+    merged_stats['TOTAL_POINTS'] = merged_stats['HOME_PTS'] + merged_stats['AWAY_PTS']
     return merged_stats.to_dict(orient="records")
 
 
-def player_analysis(team_id: str):
+def player_analysis(team_id: str, game_id: str):
     player_stats = TeamPlayerDashboard(team_id=team_id)
     player_stats = player_stats.get_dict()
     data = player_stats['resultSets']
@@ -172,12 +189,62 @@ def player_analysis(team_id: str):
                                                     'PTS_RANK', 'PLUS_MINUS_RANK', 'NBA_FANTASY_PTS_RANK', 'DD2_RANK',
                                                     'TD3_RANK', 'WNBA_FANTASY_PTS_RANK', 'NBA_FANTASY_PTS', 'PFD', 'BLKA'])
     player_stats_df = player_stats_df.sort_values(by='MIN', ascending=False)
+    player_stats_df['GAME_ID'] = game_id
     return player_stats_df.to_dict(orient="records")
 
+def get_defensive_stats(home_team_id, away_team_id):
+    team_defence = LeagueDashTeamStats(measure_type_detailed_defense='Defense')
+    team_defence_dict = team_defence.get_dict()
+    data = team_defence_dict['resultSets']
+    team_data = data[0]
+    team_defence_df = pd.DataFrame(team_data['rowSet'],columns=team_data['headers'])
+    team_defence_df = team_defence_df[team_defence_df['TEAM_ID'].isin([home_team_id, away_team_id])]
+    team_defence_df = team_defence_df.drop(columns=['GP', 'W', 'L', 'W_PCT', 'MIN','DEF_RATING',
+       'DREB', 'DREB_PCT', 'STL', 'BLK', 'OPP_PTS_OFF_TOV',
+       'OPP_PTS_2ND_CHANCE', 'OPP_PTS_FB', 'OPP_PTS_PAINT', 'GP_RANK',
+       'W_RANK', 'L_RANK', 'W_PCT_RANK', 'MIN_RANK', 'DREB_PCT_RANK', 'BLK_RANK'])
 
-def get_player_stats_in_matchup(player_id):
-    return "hi"
 
+
+    team_opp_defence = LeagueDashTeamStats(measure_type_detailed_defense='Opponent')
+    team_opp_defence_dict = team_opp_defence.get_dict()
+    data = team_opp_defence_dict['resultSets']
+    team_opp_data = data[0]
+    team_opp_defence_df = pd.DataFrame(team_opp_data['rowSet'],columns=team_opp_data['headers'])
+    team_opp_defence_df = team_opp_defence_df[['TEAM_ID','OPP_FG3_PCT_RANK','OPP_FG_PCT_RANK','OPP_REB_RANK']]
+
+
+    defensive_stats = pd.merge(team_defence_df, team_opp_defence_df, on=['TEAM_ID'])
+    
+    return defensive_stats.to_dict(orient="records")
+
+def get_offensive_stats(home_team_id, away_team_id):
+    team_offence = LeagueDashTeamStats(measure_type_detailed_defense='Scoring')
+    team_offence_dict = team_offence.get_dict()
+    data = team_offence_dict['resultSets']
+    team_data = data[0]
+    team_offence_df = pd.DataFrame(team_data['rowSet'],columns=team_data['headers'])
+    team_offence_df = team_offence_df[team_offence_df['TEAM_ID'].isin([home_team_id, away_team_id])]
+    team_offence_df = team_offence_df.drop(columns=['GP', 'W', 'L', 'W_PCT', 'MIN', 'PCT_FGA_2PT',
+       'PCT_FGA_3PT', 'PCT_PTS_2PT', 'PCT_PTS_2PT_MR', 'PCT_PTS_3PT',
+       'PCT_PTS_FB', 'PCT_PTS_FT', 'PCT_PTS_OFF_TOV', 'PCT_PTS_PAINT',
+       'PCT_AST_2PM', 'PCT_UAST_2PM', 'PCT_AST_3PM', 'PCT_UAST_3PM',
+       'PCT_AST_FGM', 'PCT_UAST_FGM', 'GP_RANK', 'W_RANK', 'L_RANK',
+       'W_PCT_RANK', 'MIN_RANK','PCT_PTS_2PT_RANK', 'PCT_PTS_2PT_MR_RANK', 
+       'PCT_PTS_3PT_RANK','PCT_PTS_FT_RANK', 'PCT_PTS_OFF_TOV_RANK', 'PCT_AST_2PM_RANK', 'PCT_UAST_2PM_RANK',
+       'PCT_AST_3PM_RANK', 'PCT_UAST_3PM_RANK', 'PCT_AST_FGM_RANK',
+       'PCT_UAST_FGM_RANK'])
+
+    team_basic_offence = LeagueDashTeamStats(measure_type_detailed_defense='Base')
+    team_basic_offence_dict = team_basic_offence.get_dict()
+    data = team_basic_offence_dict['resultSets']
+    team_basic_data = data[0]
+    team_basic_offence_df = pd.DataFrame(team_basic_data['rowSet'],columns=team_basic_data['headers'])
+    team_basic_offence_df = team_basic_offence_df[['TEAM_ID','FG3_PCT_RANK','FG_PCT_RANK','REB_RANK','TOV_RANK','STL_RANK']]
+    
+    offensive_stats = pd.merge(team_offence_df, team_basic_offence_df, on=['TEAM_ID'])
+
+    return offensive_stats.to_dict(orient="records")
 
 def game_detail(request, game_id):
 
@@ -203,8 +270,11 @@ def game_detail(request, game_id):
     # Past Matchup Data
     matchups = get_matchups(home_team_id, away_team_id)
 
-    home_player_stats = player_analysis(home_team_id)
-    away_player_stats = player_analysis(away_team_id)
+    home_player_stats = player_analysis(home_team_id, game_id)
+    away_player_stats = player_analysis(away_team_id, game_id)
+
+    team_defence_stats = get_defensive_stats(home_team_id, away_team_id)
+    team_offence_stats = get_offensive_stats(home_team_id, away_team_id)
 
     return render(request, 'game_detail.html', {
         'game_data': game_header_df.to_dict(orient="records"),
@@ -212,10 +282,12 @@ def game_detail(request, game_id):
         'previous_matchups': matchups,
         'home_team_players': home_player_stats,
         'away_team_players': away_player_stats,
+        'defensive_stats': team_defence_stats,
+        'offensive_stats': team_offence_stats
     })
 
 
-def get_player_last_10_games(player_id):
+def get_player_games(player_id):
     player_game_logs = PlayerGameLogs(season_nullable='2024-25')
     player_stats = player_game_logs.get_dict()
     data = player_stats['resultSets']
@@ -227,7 +299,7 @@ def get_player_last_10_games(player_id):
     player_stats_df = player_stats_df[player_stats_df['PLAYER_ID'].astype(
         str) == player_id]
 
-    player_stats_df = player_stats_df.drop(columns=['SEASON_YEAR', 'NICKNAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME','GAME_ID',
+    player_stats_df = player_stats_df.drop(columns=['SEASON_YEAR', 'NICKNAME', 'TEAM_ID', 'TEAM_ABBREVIATION', 'TEAM_NAME',
                                                     'WL', 'FTM',
                                                     'FTA', 'FT_PCT', 'OREB', 'DREB', 'BLKA','PFD', 'PLUS_MINUS', 'NBA_FANTASY_PTS', 'WNBA_FANTASY_PTS', 'GP_RANK', 'W_RANK', 'L_RANK', 'W_PCT_RANK',
                                                     'MIN_RANK', 'FGM_RANK', 'FGA_RANK', 'FG_PCT_RANK', 'FG3M_RANK',
@@ -239,11 +311,44 @@ def get_player_last_10_games(player_id):
     
     player_stats_df['MIN'] = player_stats_df['MIN'].round(1)
     player_stats_df['GAME_DATE'] = pd.to_datetime(player_stats_df['GAME_DATE'])
-    player_stats_df = player_stats_df.sort_values(by='GAME_DATE', ascending=False).head(10)
     player_stats_df['GAME_DATE'] = pd.to_datetime(player_stats_df['GAME_DATE']).dt.strftime('%Y-%m-%d')
     player_stats_df['MATCHUP'] = player_stats_df['MATCHUP'].str[-3:]
     return player_stats_df.to_dict(orient="records")
 
+
+def get_player_matchups(player_id, game_id):
+    # Game Data
+    games = ScoreboardV2()
+    games_dict = games.get_dict()
+    data = games_dict['resultSets']
+
+    game_header_data = data[0]
+
+    game_header_df = pd.DataFrame(
+        game_header_data['rowSet'], columns=game_header_data['headers'])
+    game_header_df['GAME_ID'] = game_header_df['GAME_ID'].astype(str)
+
+    game_header_df = game_header_df[game_header_df['GAME_ID'] == game_id]
+
+    home_team_id = game_header_df.iloc[0]['HOME_TEAM_ID']
+    away_team_id = game_header_df.iloc[0]['VISITOR_TEAM_ID']
+
+    #Now that we have the home and away team ID's, we need to fetch the matchups:
+    matchups = pd.DataFrame.from_dict(get_matchups(home_team_id, away_team_id))
+    if len(matchups) == 0:
+        return {}
+    matchups = matchups[['GAME_ID']]
+
+    player_games = pd.DataFrame.from_dict(get_player_games(player_id))
+    player_matchups = pd.merge(matchups, player_games, on=['GAME_ID'])
+
+    return player_matchups.to_dict(orient="records")
+
 def player_stats_view(request, player_id):
-    stats = get_player_last_10_games(player_id)
+    stats = get_player_games(player_id)
     return JsonResponse(stats, safe=False)
+
+def player_matchups_view(request, player_id, game_id):
+    stats = get_player_matchups(player_id, game_id)
+    return JsonResponse(stats, safe=False)
+    

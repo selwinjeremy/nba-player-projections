@@ -1,0 +1,189 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+    color: black;
+    text-align: center;
+}
+
+h1 {
+    font-size: 48px;
+    margin-top: 0px;
+    margin-bottom: 40px;
+    color: white;
+    background: linear-gradient(45deg, #0077b6, #ff0000); /* Blue and Red gradient */
+    padding: 20px;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.defensive-rankings {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.defensive-rankings h2 {
+    font-family: 'Arial', sans-serif;
+    color: rgb(0, 0, 0); /* Dark NBA Blue */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.defensive-rankings h3 {
+    font-family: 'Arial', sans-serif;
+    color: rgb(0, 0, 0); /* Dark NBA Blue */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.defensive-rankings h4 {
+    font-family: 'Arial', sans-serif;
+    color: #000;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.player-stats {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.player-stats h2 {
+    font-family: 'Arial', sans-serif;
+    color: rgb(0, 0, 0); /* Dark NBA Blue */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tables-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats-table-container,
+.matchups-table-container {
+    width: 48%;
+    margin: 10px;
+}
+
+.green {
+    color: green !important;
+    font-weight: bold !important;
+}
+
+.black {
+    color: black !important;
+}
+
+.red {
+    color: red !important;
+    font-weight: bold !important;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.previous-matchups {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.previous-matchups h2 {
+    font-family: 'Arial', sans-serif;
+    color: black; /* Dark NBA Blue */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.table {
+    width: 100%;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: black;
+}
+
+.table th, .table td {
+    text-align: center;
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.table thead {
+    background-color: rgb(3, 3, 177); /* Dark NBA Blue */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Light Gray for alternate rows */
+}
+
+.table-bordered {
+    border: 1px solid #ddd;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #ddd;
+}
+
+.table td.matchup {
+    font-weight: bold;
+}
+
+.table td.winner {
+    font-weight: bold;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: 2px solid #ddd;; /* Dark Blue bottom border */
+}
+
+/* Optional: Reduce font size in the tables too */
+.table th, .table td {
+    font-size: 0.8rem;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .previous-matchups {
+        padding: 15px;
+    }
+
+    .previous-matchups h1 {
+        font-size: 1.8rem;
+    }
+}

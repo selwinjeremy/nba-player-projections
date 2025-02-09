@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,209 +6,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Details</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 0;
-            color: black;
-            text-align: center;
-        }
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 
-        h1 {
-            font-size: 36px;
-            margin-top: 20px;
-            color: #1e3a8a;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .game-info {
-            width: 80%;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .teams-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .team {
-            flex: 1;
-            padding: 20px;
-            background: #ffffff;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .team h2 {
-            margin: 5px 0;
-            font-size: 24px;
-            color: #1e3a8a;
-        }
-
-        .team-stats {
-            font-size: 14px;
-            margin-top: 10px;
-            color: #4b5563;
-        }
-
-        .vs {
-            font-size: 28px;
-            font-weight: bold;
-            color: #e11d48;
-            margin: 0 20px;
-        }
-
-        .game-details {
-            font-size: 18px;
-            margin-top: 20px;
-            color: #374151;
-        }
-
-        .arena {
-            font-size: 14px;
-            margin-top: 10px;
-            color: #e11d48;
-        }
-
-        .previous-matchups {
-            text-align: left;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 14px;
-            /* Smaller font size for compactness */
-        }
-
-        .table th,
-        .table td {
-            padding: 8px 10px;
-            /* Reduced padding for a more compact layout */
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .table th {
-            background-color: #1e3a8a;
-            color: white;
-            font-size: 16px;
-            /* Slightly larger header for clarity */
-        }
-
-        .table td {
-            color: #4b5563;
-        }
-
-        .table .matchup {
-            font-weight: bold;
-            color: #1e3a8a;
-        }
-
-        .table .score {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .winner {
-            font-weight: bold;
-            color: #e11d48;
-        }
-
-        .player-table th,
-        .player-table td {
-            padding: 6px 8px;
-            /* Smaller padding for player stats table */
-            font-size: 12px;
-            /* Smaller font size */
-        }
-
-        .player-table th {
-            font-size: 14px;
-            /* Slightly larger font for headers */
-        }
-
-        .player-table {
-            margin-top: 10px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .player-table th {
-            background-color: #1e3a8a;
-            color: white;
-        }
-
-        .player-table td {
-            color: #4b5563;
-            font-size: 12px;
-            /* Smaller font for player data */
-        }
-
-        /* Card style for player stats tables */
-        .player-stats-card {
-            width: 80%;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-    </style>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
     <h1>🏀 Game Details 🏀</h1>
 
-    <div class="game-info">
+    <div class="game-info container mt-4">
         {% if game_data %}
-        <div class="teams-container">
-            <div class="team">
-                <h2>{{ team_data.0.TEAM_CITY }} {{ team_data.0.TEAM_NAME }} (H)</h2>
-                <p class="team-stats">Record: {{ team_data.0.W }} - {{ team_data.0.L }}</p>
-                <p class="team-stats">Points per Game: {{ team_data.0.PTS_PG }} ({{team_data.0.PTS_RANK}})</p>
-                <p class="team-stats">Opponent PPG: {{ team_data.0.OPP_PTS_PG }} ({{team_data.0.OPP_PTS_RANK}})</p>
+        <div class="row align-items-center">
+            <!-- Home Team (left) -->
+            <div class="col-12 col-md-4 d-flex align-items-center justify-content-start">
+                <img src="{{ team_data.0.LOGO_PATH }}" alt="{{ team_data.0.TEAM_NAME }} Logo" class="me-3"
+                    style="max-width: 150px;">
+                <div class="text-start">
+                    <h2>{{ team_data.0.TEAM_CITY }} {{ team_data.0.TEAM_NAME }} (H)</h2>
+                    <p class="mb-0">Record: {{ team_data.0.W }} - {{ team_data.0.L }}</p>
+                    <p class="mb-0">Points per Game: {{ team_data.0.PTS_PG }} ({{ team_data.0.PTS_RANK }})</p>
+                    <p class="mb-0">Opponent PPG: {{ team_data.0.OPP_PTS_PG }} ({{ team_data.0.OPP_PTS_RANK }})</p>
+                </div>
             </div>
 
-            <div class="vs">VS</div>
+            <!-- VS (centered) -->
+            <div class="col-12 col-md-4 text-center">
+                <h3 class="my-3">VS</h3>
+            </div>
 
-            <div class="team">
-                <h2>{{ team_data.1.TEAM_CITY }} {{ team_data.1.TEAM_NAME }} (A)</h2>
-                <p class="team-stats">Record: {{ team_data.1.W }} - {{ team_data.1.L }}</p>
-                <p class="team-stats">Points per Game: {{ team_data.1.PTS_PG }} ({{team_data.1.PTS_RANK}})</p>
-                <p class="team-stats">Opponent PPG: {{ team_data.1.OPP_PTS_PG }} ({{team_data.1.OPP_PTS_RANK}})</p>
+            <!-- Away Team (right) -->
+            <div class="col-12 col-md-4 d-flex align-items-center justify-content-end">
+                <div class="text-end">
+                    <h2>{{ team_data.1.TEAM_CITY }} {{ team_data.1.TEAM_NAME }} (A)</h2>
+                    <p class="mb-0">Record: {{ team_data.1.W }} - {{ team_data.1.L }}</p>
+                    <p class="mb-0">Points per Game: {{ team_data.1.PTS_PG }} ({{ team_data.1.PTS_RANK }})</p>
+                    <p class="mb-0">Opponent PPG: {{ team_data.1.OPP_PTS_PG }} ({{ team_data.1.OPP_PTS_RANK }})</p>
+                </div>
+                <img src="{{ team_data.1.LOGO_PATH }}" alt="{{ team_data.1.TEAM_NAME }} Logo" class="ms-3"
+                    style="max-width: 150px;">
             </div>
         </div>
 
-        <div class="game-details">
-            <p class="game-day">Game Time: {{ game_data.0.GAME_STATUS_TEXT }}</p>
-            <p class="arena">Arena: {{ game_data.0.ARENA_NAME }}</p>
+        <div class="mt-4 text-center">
+            <p>Game Time: <strong>{{ game_data.0.GAME_STATUS_TEXT }}</strong></p>
+            <p>Arena: <strong>{{ game_data.0.ARENA_NAME }}</strong></p>
         </div>
         {% else %}
         <p>No game data available.</p>
         {% endif %}
     </div>
 
-    <div class="game-info previous-matchups">
-        <h1>Previous Matchups</h1>
-        <table class="table">
+    <div class="game-info previous-matchups" data-player-id="{{ previous_matchups }}">
+        <h2>Previous Matchups</h2>
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Matchup</th>
                     <th>Game Date</th>
                     <th>Winner</th>
                     <th>Score</th>
+                    <th>Total Points</th>
                 </tr>
             </thead>
             <tbody>
@@ -226,14 +86,113 @@
                         {{ game.TEAM_ABBREVIATION_HOME }} {{ game.HOME_PTS }} -
                         {{ game.TEAM_ABBREVIATION_AWAY }} {{ game.AWAY_PTS }}
                     </td>
+                    <td class="points">
+                        {{ game.TOTAL_POINTS }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="player-stats-card">
+    <div class="defensive-rankings">
+        <h2>Offensive & Defensive Rankings</h2>
+        <h4>Being ranked #1 means the team is the best and #30 means the team is the worst</h4>
+
+        <!-- Offence Table -->
+        <h3>Offence</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>Field Goal %</th>
+                    <th>3pt Field Goal %</th>
+                    <th>Points in the Paint</th>
+                    <th>Fast Break Points</th>
+                    <th>Rebounding</th>
+                    <th>Turnovers</th>
+                    <th>Steals</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in offensive_stats %}
+                <tr>
+                    <td class="team-name">{{ team.TEAM_NAME }}</td>
+                    <td>{{ team.FG_PCT_RANK }}</td>
+                    <td>{{ team.FG3_PCT_RANK }}</td>
+                    <td>{{ team.PCT_PTS_PAINT_RANK }}</td>
+                    <td>{{ team.PCT_PTS_FB_RANK }}</td>
+                    <td>{{ team.REB_RANK }}</td>
+                    <td>{{ team.TOV_RANK }}</td>
+                    <td>{{ team.STL_RANK }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Defence Table -->
+        <h3>Defence</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                    <th>Defensive Rating</th>
+                    <th>Field Goal % Allowed</th>
+                    <th>3pt Field Goal % Allowed</th>
+                    <th>Points in the Paint Allowed</th>
+                    <th>Rebounds Allowed</th>
+                    <th>2nd Chance Pts Allowed</th>
+                    <th>Fast Break Pts Allowed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in defensive_stats %}
+                <tr>
+                    <td class="team-name">{{ team.TEAM_NAME }}</td>
+                    <td>{{ team.DEF_RATING_RANK }}</td>
+                    <td>{{ team.OPP_FG_PCT_RANK }}</td>
+                    <td>{{ team.OPP_FG3_PCT_RANK }}</td>
+                    <td>{{ team.OPP_PTS_PAINT_RANK }}</td>
+                    <td>{{ team.OPP_REB_RANK }}</td>
+                    <td>{{ team.OPP_PTS_2ND_CHANCE_RANK }}</td>
+                    <td>{{ team.OPP_PTS_FB_RANK }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to update text color and boldness based on value
+        function updateTextColors() {
+            // Select all table cells within the offensive and defensive tables
+            const tdElements = document.querySelectorAll('.defensive-rankings .table td');
+    
+            tdElements.forEach(td => {
+                console.log(td)
+                const value = parseInt(td.innerText);
+    
+                if (!isNaN(value)) {
+                    if (value >= 1 && value <= 5) {
+                        td.classList.add('green'); // Bold green for values 1-5
+                    } else if (value >= 16 && value <= 25) {
+                        td.classList.add('black'); // Black for values 16-25
+                    } else if (value >= 26 && value <= 30) {
+                        td.classList.add('red'); // Bold red for values 26-30
+                    }
+                }
+            });
+        }
+    
+        // Run the function once the document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTextColors();
+        });
+    </script>
+
+    
+    <div class="player-stats">
         <h2 class=>{{ team_data.0.TEAM_NAME }} Player Stats</h2>
-        <table class="player-table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -259,7 +218,7 @@
             <tbody>
                 {% for player in home_team_players %}
                 <tr>
-                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}">{{ player.PLAYER_NAME}}</a></td>
+                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}" data-game-id="{{ player.GAME_ID }}">{{ player.PLAYER_NAME}}</a></td>
                     <td>{{ player.GP }}</td>
                     <td>{{ player.MIN }}</td>
                     <td>{{ player.FGM }}</td>
@@ -282,9 +241,9 @@
             </tbody>
         </table>
     </div>
-    <div class="player-stats-card">
+    <div class="player-stats">
         <h2>{{ team_data.1.TEAM_NAME }} Player Stats</h2>
-        <table class="player-table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -310,7 +269,7 @@
             <tbody>
                 {% for player in away_team_players %}
                 <tr>
-                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}">{{ player.PLAYER_NAME}}</a></td>
+                    <td><a href="#" class="player-link" data-player-id="{{ player.PLAYER_ID }}" data-game-id="{{ player.GAME_ID }}">{{ player.PLAYER_NAME}}</a></td>
                     <td>{{ player.GP }}</td>
                     <td>{{ player.MIN }}</td>
                     <td>{{ player.FGM }}</td>
@@ -333,80 +292,157 @@
             </tbody>
         </table>
     </div>
-    <div id="player-stats-container"></div>
+    <style>
+        .modal-dialog {
+            max-width: 90%; 
+        }
+        .modal-body {
+            display: flex;
+            gap: 2%
+        }
+        .stats-table-container, .matchups-table-container {
+            display: inline-block;
+            width: 48%; /* Ensure both tables are next to each other */
+            vertical-align: top;
+            margin-right: 2%; /* Add a little margin between the tables */
+        }
+    </style>
+
+    <div id="playerStatsModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Player Stats and Matchups</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="player-stats-container">
+                    <!-- Stats and matchups tables will be inserted here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         document.querySelectorAll('.player-link').forEach(link => {
             link.addEventListener('click', function (e) {
                 e.preventDefault();
                 const playerId = this.getAttribute('data-player-id');
-                console.log(playerId)
-                fetch(`/get_player_last_10_games/${playerId}/`)
+                const gameId = this.getAttribute('data-game-id');
+
+                // Fetch player stats
+                fetch(`/get_player_games/${playerId}`)
                     .then(response => response.json())
                     .then(data => {
-                        const table = createStatsTable(data);
-                        console.log(table)
-                        document.getElementById('player-stats-container').innerHTML = table;
+                        // Fetch player matchups after stats
+                        fetch(`/get_player_matchups/${playerId}/${gameId}`)
+                            .then(response => response.json())
+                            .then(data2 => {
+                                // Create the stats and matchups tables
+                                const statsTable = createStatsTable(data);
+                                const matchupsTable = createMatchupsTable(data2);
+
+                                // Update the modal with both tables
+                                document.getElementById('player-stats-container').innerHTML = statsTable + matchupsTable;
+
+                                // Show the modal (Bootstrap modal method)
+                                const modal = new bootstrap.Modal(document.getElementById('playerStatsModal'));
+                                modal.show();
+                            })
+                            .catch(error => console.log('Error with matchups fetch:', error));
                     })
-                    .catch(error => console.log('Error:', error));
+                    .catch(error => console.log('Error with player stats fetch:', error));
             });
         });
 
+        // Function to create the player stats table
         function createStatsTable(data) {
-            let tableHTML = `<div class="player-stats-card">
-    <h2>${data[0].PLAYER_NAME} Last 10 Games</h2>
-    <table class="player-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Opp</th>
-                <th>MIN</th>
-                <th>FGM</th>
-                <th>FGA</th>
-                <th>FG %</th>
-                <th>3-FGM</th>
-                <th>3-FGA</th>
-                <th>3-FG %</th>
-                <th>PTS</th>
-                <th>REB</th>
-                <th>AST</th>
-                <th>STL</th>
-                <th>BLK</th>
-                <th>TOV</th>
-                <th>DD</th>
-                <th>TD</th>
-                <th>PF</th>
-            </tr>
-        </thead>
-        <tbody>`;
+            let tableHTML = `
+            <div class="stats-table-container mb-4">
+                <h2>${data[0].PLAYER_NAME} - Last 10 Games</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Opp</th>
+                            <th>MIN</th>
+                            <th>PTS</th>
+                            <th>REB</th>
+                            <th>AST</th>
+                            <th>STL</th>
+                            <th>BLK</th>
+                            <th>TOV</th>
+                            <th>3-FGM</th>
+                            <th>3-FGA</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
-            data.forEach(row => {
-                console.log(row)
+            data.slice(0, 10).forEach(row => {
                 tableHTML += `<tr>
                         <td>${row.GAME_DATE}</td>
                         <td>${row.MATCHUP}</td>
                         <td>${row.MIN}</td>
-                        <td>${row.FGM}</td>
-                        <td>${row.FGA}</td>
-                        <td>${row.FG_PCT}</td>
-                        <td>${row.FG3M}</td>
-                        <td>${row.FG3A}</td>
-                        <td>${row.FG3_PCT}</td>
                         <td>${row.PTS}</td>
                         <td>${row.REB}</td>
                         <td>${row.AST}</td>
                         <td>${row.STL}</td>
                         <td>${row.BLK}</td>
                         <td>${row.TOV}</td>
-                        <td>${row.DD2}</td>
-                        <td>${row.TD3}</td>
-                        <td>${row.PF}</td>
+                        <td>${row.FG3M}</td>
+                        <td>${row.FG3A}</td>
                     </tr>`;
             });
 
             tableHTML += `</tbody></table></div>`;
             return tableHTML;
         }
+
+        // Function to create the player matchups table
+        function createMatchupsTable(data = []) {
+            let tableHTML = `<div class="matchups-table-container mb-4">
+                <h2>${(data[0] === undefined) ? "No Matchups" : data[0].PLAYER_NAME} - Against Opponent</h2>
+                <table class="table table-table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Opp</th>
+                            <th>MIN</th>
+                            <th>PTS</th>
+                            <th>REB</th>
+                            <th>AST</th>
+                            <th>STL</th>
+                            <th>BLK</th>
+                            <th>TOV</th>
+                            <th>3-FGM</th>
+                            <th>3-FGA</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            if (data[0] === undefined) {
+                tableHTML += `<tr><td colspan="11" class="text-center">No matchups available</td></tr>`;
+            } else {
+                data.slice(0, 10).forEach(row => {
+                    tableHTML += `<tr>
+                        <td>${row.GAME_DATE}</td>
+                        <td>${row.MATCHUP}</td>
+                        <td>${row.MIN}</td>
+                        <td>${row.PTS}</td>
+                        <td>${row.REB}</td>
+                        <td>${row.AST}</td>
+                        <td>${row.STL}</td>
+                        <td>${row.BLK}</td>
+                        <td>${row.TOV}</td>
+                        <td>${row.FG3M}</td>
+                        <td>${row.FG3A}</td>
+                    </tr>`;
+                });
+            }
+
+            tableHTML += `</tbody></table></div>`;
+            return tableHTML;
+        }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
