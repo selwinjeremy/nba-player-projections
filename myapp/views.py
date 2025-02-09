@@ -14,6 +14,7 @@ from nba_api.stats.endpoints.playergamelogs import PlayerGameLogs
 from nba_api.stats.endpoints.playerindex import PlayerIndex
 
 import pandas as pd
+import time
 
 # Create your views here.
 
@@ -23,7 +24,14 @@ def home(request):
 
 
 def game_list(request):
-    games = ScoreboardV2()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    
+    # Throttle API calls to avoid rate limiting (sleep for 0.6 seconds)
+    time.sleep(0.6)
+
+    games = ScoreboardV2(header=headers)
     games_dict = games.get_dict()
     data = games_dict['resultSets']
 
