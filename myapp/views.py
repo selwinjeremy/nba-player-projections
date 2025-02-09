@@ -31,7 +31,7 @@ def game_list(request):
     # Throttle API calls to avoid rate limiting (sleep for 0.6 seconds)
     time.sleep(0.6)
 
-    games = ScoreboardV2(header=headers)
+    games = ScoreboardV2(headers=headers)
     games_dict = games.get_dict()
     data = games_dict['resultSets']
 
