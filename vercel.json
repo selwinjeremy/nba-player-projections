@@ -9,5 +9,10 @@
             "src": "/(.*)",
             "dest": "nbaprojections/wsgi.py"
         }
-    ]
+    ],
+    "functions": {
+        "api/*": {
+        "maxDuration": 60
+        }
+    }
 }
