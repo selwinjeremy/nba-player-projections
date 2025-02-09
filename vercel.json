@@ -16,7 +16,7 @@
       }
     ],
     "functions": {
-        "myapp/**/*": {
+        "/": {
             "maxDuration": 45
         }
     }
