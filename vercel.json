@@ -14,10 +14,5 @@
         "src": "/(.*)",
         "dest": "nbaprojections/wsgi.py"
       }
-    ],
-    "functions": {
-        "/": {
-            "maxDuration": 45
-        }
-    }
+    ]
 }
