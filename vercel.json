@@ -6,6 +6,11 @@
         "config": {
           "maxLambdaSize": "15mb",
           "runtime": "python3.9"
+        },
+        "functions": {
+            "myapp/**/*": {
+                "maxDuration": 45
+            }
         }
       }
     ],
@@ -14,10 +19,6 @@
         "src": "/(.*)",
         "dest": "nbaprojections/wsgi.py"
       }
-    ],
-    "functions": {
-        "myapp/api/**/*": {
-            "maxDuration": 45 
-        }
-    }
+    ]
+
   }
